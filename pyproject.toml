@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "appflowysdk"
-version = "0.1.1"
+version = "0.1.2"
 description = "Type-safe Python SDK for the AppFlowy Cloud REST API"
 readme = "README.md"
 license = "MIT"
@@ -27,10 +27,10 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/Jemo69/appflowysdk"
-Documentation = "https://github.com/Jemo69/appflowysdk/tree/main/docs"
-Repository = "https://github.com/Jemo69/appflowysdk"
-Issues = "https://github.com/Jemo69/appflowysdk/issues"
+Homepage = "https://github.com/Jemo69/Appflowy-SDK"
+Documentation = "https://github.com/Jemo69/Appflowy-SDK/tree/main/docs"
+Repository = "https://github.com/Jemo69/Appflowy-SDK"
+Issues = "https://github.com/Jemo69/Appflowy-SDK/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
