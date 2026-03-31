@@ -24,7 +24,7 @@ pip install -e .
 ## Basic Usage
 
 ```python
-from appflowy import AppFlowy
+from appflowysdk import AppFlowy
 
 # Create a client with credentials
 client = AppFlowy(

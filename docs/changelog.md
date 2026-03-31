@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.0.1 (2026-03-30)
+## 0.1.0 (2026-03-30)
 
 Initial release with full AppFlowy Cloud REST API coverage.
 
@@ -23,3 +23,9 @@ Initial release with full AppFlowy Cloud REST API coverage.
 - Fixed exception handling order (specific before general)
 - Fixed empty `consontant.py` (missing `BASE_URL`)
 - Fixed overly permissive type hints (`str | None | Any`)
+
+
+## 0.1.1 - 0.1.2 (2026-03-30)
+
+- GitHub Actions release workflow
+- Fixed broken PyPI release
