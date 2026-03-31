@@ -1,3 +1,5 @@
+"""Pydantic models and enums for the AppFlowy Cloud API."""
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -7,7 +9,9 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 
-# --- Enums ---
+# ---------------------------------------------------------------------------
+# Enums
+# ---------------------------------------------------------------------------
 
 
 class IconType(IntEnum):
@@ -30,16 +34,22 @@ class Role(IntEnum):
     GUEST = 3
 
 
-# --- Token Models ---
+# ---------------------------------------------------------------------------
+# Token models
+# ---------------------------------------------------------------------------
 
 
 class Token(BaseModel):
+    """Internal token storage."""
+
     access_token: str = ""
     refresh_token: str = ""
     expires_in: int = 0
 
 
 class TokenResponse(BaseModel):
+    """Server response from authentication endpoints."""
+
     access_token: str
     token_type: str | None = None
     expires_in: int
@@ -50,7 +60,9 @@ class TokenResponse(BaseModel):
     provider_refresh_token: str | None = None
 
 
-# --- Generic API Response ---
+# ---------------------------------------------------------------------------
+# Generic API response
+# ---------------------------------------------------------------------------
 
 
 class ApiResponse(BaseModel):
@@ -58,7 +70,9 @@ class ApiResponse(BaseModel):
     message: str
 
 
-# --- Workspace Models ---
+# ---------------------------------------------------------------------------
+# Workspace models
+# ---------------------------------------------------------------------------
 
 
 class Workspace(BaseModel):
@@ -75,7 +89,9 @@ class Workspace(BaseModel):
     role: Role | None = None
 
 
-# --- View / Folder Models ---
+# ---------------------------------------------------------------------------
+# View / Folder models
+# ---------------------------------------------------------------------------
 
 
 class ViewIcon(BaseModel):
@@ -105,7 +121,9 @@ class FolderView(BaseModel):
     children: list[FolderView] = Field(default_factory=list)
 
 
-# --- Database Models ---
+# ---------------------------------------------------------------------------
+# Database models
+# ---------------------------------------------------------------------------
 
 
 class Database(BaseModel):
@@ -137,7 +155,9 @@ class DatabaseRowDetail(BaseModel):
     doc: str | None = None
 
 
-# --- Request Models ---
+# ---------------------------------------------------------------------------
+# Request models
+# ---------------------------------------------------------------------------
 
 
 class AddDatabaseRowRequest(BaseModel):
@@ -151,7 +171,9 @@ class UpsertDatabaseRowRequest(BaseModel):
     document: str | None = None
 
 
-# --- Generic typed API responses ---
+# ---------------------------------------------------------------------------
+# Typed API response wrappers
+# ---------------------------------------------------------------------------
 
 
 class WorkspacesResponse(BaseModel):
@@ -194,15 +216,3 @@ class DatabaseRowDetailsResponse(BaseModel):
     code: int
     message: str
     data: list[DatabaseRowDetail] = Field(default_factory=list)
-
-
-class CreateDatabaseRowResponse(BaseModel):
-    code: int
-    message: str
-    data: str | None = None
-
-
-class UpsertDatabaseRowResponse(BaseModel):
-    code: int
-    message: str
-    data: str | None = None

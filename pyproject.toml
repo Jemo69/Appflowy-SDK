@@ -1,16 +1,21 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "appflowysdk"
-version = "0.1.0"
+version = "0.1.1"
 description = "Type-safe Python SDK for the AppFlowy Cloud REST API"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.12"
-authors = [{ name = "AppFlowy SDK Contributors" }]
+authors = [
+    {name = "AppFlowy SDK Contributors"},
+]
 keywords = ["appflowy", "api", "sdk", "cloud", "productivity"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -22,14 +27,10 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/your-org/appflowysdk"
-Documentation = "https://github.com/your-org/appflowysdk/tree/main/docs"
-Repository = "https://github.com/your-org/appflowysdk"
-Issues = "https://github.com/your-org/appflowysdk/issues"
+Homepage = "https://github.com/Jemo69/appflowysdk"
+Documentation = "https://github.com/Jemo69/appflowysdk/tree/main/docs"
+Repository = "https://github.com/Jemo69/appflowysdk"
+Issues = "https://github.com/Jemo69/appflowysdk/issues"
 
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[tool.hatch.build.targets.wheel]
-packages = ["src", "appflowy.py"]
+[tool.setuptools.packages.find]
+where = ["src"]

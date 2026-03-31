@@ -1,3 +1,5 @@
+"""AppFlowy Cloud REST API client."""
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -5,8 +7,8 @@ from typing import Any
 
 import httpx
 
-from src.consontant import BASE_URL
-from src.exception import (
+from appflowysdk.constants import BASE_URL
+from appflowysdk.exceptions import (
     APIError,
     AuthenticationError,
     LoginError,
@@ -14,10 +16,9 @@ from src.exception import (
     RefreshTokenError,
     ValidationError,
 )
-from src.logger import logger
-from src.models import (
+from appflowysdk.logger import logger
+from appflowysdk.models import (
     AddDatabaseRowRequest,
-    ApiResponse,
     Database,
     DatabaseField,
     DatabaseFieldsResponse,
@@ -36,7 +37,7 @@ from src.models import (
     Workspace,
     WorkspacesResponse,
 )
-from src.tokenstore import TokenStore
+from appflowysdk.tokenstore import TokenStore
 
 
 class AppFlowy:
@@ -54,6 +55,10 @@ class AppFlowy:
         self.token_store = TokenStore()
         self._http_client = httpx.Client(timeout=30.0)
 
+    # ------------------------------------------------------------------
+    # Internal helpers
+    # ------------------------------------------------------------------
+
     def _headers(self) -> dict[str, str]:
         headers: dict[str, str] = {
             "Content-Type": "application/json",
@@ -65,12 +70,11 @@ class AppFlowy:
         return headers
 
     def _handle_response(self, response: httpx.Response) -> dict[str, Any]:
-        """Validate HTTP response and return parsed JSON body."""
         try:
             body: dict[str, Any] = response.json()
         except Exception:
             raise APIError(
-                f"Failed to parse response body",
+                "Failed to parse response body",
                 status_code=response.status_code,
                 body=response.text,
             )
@@ -92,7 +96,6 @@ class AppFlowy:
         params: dict[str, Any] | None = None,
         json_body: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Make an authenticated HTTP request."""
         url = f"{self.base_url}{path}"
         try:
             response = self._http_client.request(
@@ -117,7 +120,10 @@ class AppFlowy:
     # ------------------------------------------------------------------
 
     def login(self) -> TokenResponse:
-        """Authenticate with email and password, obtaining access/refresh tokens.
+        """Authenticate with email and password.
+
+        Returns:
+            TokenResponse with access and refresh tokens.
 
         Raises:
             LoginError: If credentials are missing or login fails.
@@ -156,6 +162,9 @@ class AppFlowy:
     def refresh_token(self) -> TokenResponse:
         """Refresh the access token using the stored refresh token.
 
+        Returns:
+            TokenResponse with new access and refresh tokens.
+
         Raises:
             RefreshTokenError: If no refresh token is stored or refresh fails.
             NetworkError: If a network error occurs.
@@ -192,24 +201,16 @@ class AppFlowy:
         self,
         code: str,
         grant_type: str,
+        *,
         client_id: str | None = None,
         client_secret: str | None = None,
         redirect_uri: str | None = None,
         code_verifier: str | None = None,
     ) -> TokenResponse:
-        """Exchange an OAuth authorization code for access/refresh tokens.
+        """Exchange an OAuth authorization code for tokens.
 
-        Args:
-            code: The authorization code received from the OAuth redirect.
-            grant_type: Type of OAuth 2.0 flow.
-            client_id: Optional client ID.
-            client_secret: Optional client secret.
-            redirect_uri: Optional redirect URI.
-            code_verifier: Optional PKCE code verifier.
-
-        Raises:
-            APIError: If the token exchange fails.
-            NetworkError: If a network error occurs.
+        Returns:
+            TokenResponse with access and refresh tokens.
         """
         params: dict[str, Any] = {
             "code": code,
@@ -242,18 +243,11 @@ class AppFlowy:
 
     def get_workspaces(
         self,
+        *,
         include_member_count: bool | None = None,
         include_role: bool | None = None,
     ) -> list[Workspace]:
-        """Retrieve all workspaces for the authenticated user.
-
-        Args:
-            include_member_count: Include member count in the response.
-            include_role: Include the user's role in the response.
-
-        Raises:
-            APIError: If the request fails.
-        """
+        """Retrieve all workspaces for the authenticated user."""
         params: dict[str, Any] = {}
         if include_member_count is not None:
             params["include_member_count"] = include_member_count
@@ -265,25 +259,17 @@ class AppFlowy:
         return response.data
 
     # ------------------------------------------------------------------
-    # Workspace Folder
+    # Workspace folder
     # ------------------------------------------------------------------
 
     def get_workspace_folder(
         self,
         workspace_id: str,
+        *,
         depth: int | None = None,
         root_view_id: str | None = None,
     ) -> FolderView:
-        """Retrieve the folder structure of a workspace.
-
-        Args:
-            workspace_id: The workspace UUID.
-            depth: Maximum depth of the folder tree. Defaults to 1.
-            root_view_id: Root view ID for subfolder retrieval.
-
-        Raises:
-            APIError: If the request fails.
-        """
+        """Retrieve the folder structure of a workspace."""
         params: dict[str, Any] = {}
         if depth is not None:
             params["depth"] = depth
@@ -305,14 +291,7 @@ class AppFlowy:
     # ------------------------------------------------------------------
 
     def get_databases(self, workspace_id: str) -> list[Database]:
-        """Retrieve all databases in a workspace.
-
-        Args:
-            workspace_id: The workspace UUID.
-
-        Raises:
-            APIError: If the request fails.
-        """
+        """Retrieve all databases in a workspace."""
         body = self._request(
             "GET",
             f"/api/workspace/{workspace_id}/database",
@@ -320,24 +299,12 @@ class AppFlowy:
         response = DatabasesResponse(**body)
         return response.data
 
-    # ------------------------------------------------------------------
-    # Database Fields
-    # ------------------------------------------------------------------
-
     def get_database_fields(
         self,
         workspace_id: str,
         database_id: str,
     ) -> list[DatabaseField]:
-        """Retrieve all fields in a database.
-
-        Args:
-            workspace_id: The workspace UUID.
-            database_id: The database UUID.
-
-        Raises:
-            APIError: If the request fails.
-        """
+        """Retrieve all fields in a database."""
         body = self._request(
             "GET",
             f"/api/workspace/{workspace_id}/database/{database_id}/fields",
@@ -346,7 +313,7 @@ class AppFlowy:
         return response.data
 
     # ------------------------------------------------------------------
-    # Database Rows
+    # Database rows
     # ------------------------------------------------------------------
 
     def get_database_row_ids(
@@ -354,15 +321,7 @@ class AppFlowy:
         workspace_id: str,
         database_id: str,
     ) -> list[DatabaseRow]:
-        """Retrieve all row IDs in a database.
-
-        Args:
-            workspace_id: The workspace UUID.
-            database_id: The database UUID.
-
-        Raises:
-            APIError: If the request fails.
-        """
+        """Retrieve all row IDs in a database."""
         body = self._request(
             "GET",
             f"/api/workspace/{workspace_id}/database/{database_id}/row",
@@ -374,22 +333,14 @@ class AppFlowy:
         self,
         workspace_id: str,
         database_id: str,
+        *,
         cells: dict[str, Any] | None = None,
         document: str | None = None,
     ) -> str:
         """Create a new row in a database.
 
-        Args:
-            workspace_id: The workspace UUID.
-            database_id: The database UUID.
-            cells: Cell values keyed by field_id or field_name.
-            document: Optional markdown document content for the row.
-
         Returns:
-            The UUID of the newly created row.
-
-        Raises:
-            APIError: If the request fails.
+            UUID of the newly created row.
         """
         request = AddDatabaseRowRequest(
             cells=cells or {},
@@ -400,35 +351,21 @@ class AppFlowy:
             f"/api/workspace/{workspace_id}/database/{database_id}/row",
             json_body=request.model_dump(exclude_none=True),
         )
-        response = ApiResponse(**body)
-        row_id: str = body.get("data", "")
-        return row_id
+        return str(body.get("data", ""))
 
     def upsert_database_row(
         self,
         workspace_id: str,
         database_id: str,
         pre_hash: str,
+        *,
         cells: dict[str, Any] | None = None,
         document: str | None = None,
     ) -> str:
-        """Update or insert a row in a database (upsert).
-
-        The row is identified by a hash of `pre_hash`. If the row exists it is
-        updated; otherwise a new row is created.
-
-        Args:
-            workspace_id: The workspace UUID.
-            database_id: The database UUID.
-            pre_hash: String used to compute the row's unique hash.
-            cells: Cell values keyed by field_id or field_name.
-            document: Optional markdown document content for the row.
+        """Update or insert a row identified by ``pre_hash``.
 
         Returns:
-            The UUID of the created or updated row.
-
-        Raises:
-            APIError: If the request fails.
+            UUID of the created or updated row.
         """
         request = UpsertDatabaseRowRequest(
             pre_hash=pre_hash,
@@ -440,35 +377,25 @@ class AppFlowy:
             f"/api/workspace/{workspace_id}/database/{database_id}/row",
             json_body=request.model_dump(exclude_none=True),
         )
-        row_id: str = body.get("data", "")
-        return row_id
+        return str(body.get("data", ""))
 
     # ------------------------------------------------------------------
-    # Database Row Updates
+    # Row updates
     # ------------------------------------------------------------------
 
     def get_database_row_ids_updated(
         self,
         workspace_id: str,
         database_id: str,
+        *,
         after: datetime | str | None = None,
     ) -> list[DatabaseRowUpdated]:
-        """Retrieve row IDs that have been updated after a given timestamp.
-
-        Args:
-            workspace_id: The workspace UUID.
-            database_id: The database UUID.
-            after: ISO 8601 datetime or string to filter rows updated after.
-
-        Raises:
-            APIError: If the request fails.
-        """
+        """Retrieve row IDs updated after a given timestamp."""
         params: dict[str, Any] = {}
         if after is not None:
-            if isinstance(after, datetime):
-                params["after"] = after.isoformat()
-            else:
-                params["after"] = after
+            params["after"] = (
+                after.isoformat() if isinstance(after, datetime) else after
+            )
 
         body = self._request(
             "GET",
@@ -479,7 +406,7 @@ class AppFlowy:
         return response.data
 
     # ------------------------------------------------------------------
-    # Database Row Details
+    # Row details
     # ------------------------------------------------------------------
 
     def get_database_row_details(
@@ -487,26 +414,18 @@ class AppFlowy:
         workspace_id: str,
         database_id: str,
         row_ids: list[str],
+        *,
         with_doc: bool | None = None,
     ) -> list[DatabaseRowDetail]:
         """Retrieve detailed information for specific database rows.
 
-        Args:
-            workspace_id: The workspace UUID.
-            database_id: The database UUID.
-            row_ids: List of row UUIDs to retrieve.
-            with_doc: Include document content for each row.
-
         Raises:
-            APIError: If the request fails.
             ValidationError: If no row IDs are provided.
         """
         if not row_ids:
             raise ValidationError("At least one row ID is required.")
 
-        params: dict[str, Any] = {
-            "ids": ",".join(row_ids),
-        }
+        params: dict[str, Any] = {"ids": ",".join(row_ids)}
         if with_doc is not None:
             params["with_doc"] = with_doc
 
@@ -529,5 +448,10 @@ class AppFlowy:
     def __enter__(self) -> AppFlowy:
         return self
 
-    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: Any,
+    ) -> None:
         self.close()

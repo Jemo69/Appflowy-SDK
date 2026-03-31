@@ -1,6 +1,8 @@
+"""In-memory token storage."""
+
 from __future__ import annotations
 
-from src.models import Token
+from appflowysdk.models import Token
 
 
 class TokenStore:
