@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from enum import IntEnum
+from enum import Enum, IntEnum
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -28,10 +28,29 @@ class ViewLayout(IntEnum):
     CHAT = 4
 
 
-class Role(IntEnum):
-    OWNER = 1
-    MEMBER = 2
-    GUEST = 3
+class Role(str, Enum):
+    """Workspace member role.
+
+    AppFlowy Cloud's API returns the role as a string ("Owner", "Member",
+    "Guest"). Older releases used integers (1, 2, 3), so ``_missing_``
+    accepts both forms for backward compatibility.
+    """
+
+    OWNER = "Owner"
+    MEMBER = "Member"
+    GUEST = "Guest"
+
+    @classmethod
+    def _missing_(cls, value):
+        if isinstance(value, int):
+            return {1: cls.OWNER, 2: cls.MEMBER, 3: cls.GUEST}.get(value)
+        if isinstance(value, str):
+            lookup = {
+                "1": cls.OWNER, "2": cls.MEMBER, "3": cls.GUEST,
+                "owner": cls.OWNER, "member": cls.MEMBER, "guest": cls.GUEST,
+            }
+            return lookup.get(value.lower())
+        return None
 
 
 # ---------------------------------------------------------------------------
