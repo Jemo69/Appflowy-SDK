@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.3 (2026-05-18)
+
+### Features
+
+- Added document-related endpoints for collabs, pages, quick notes, search, publishing, and imports.
+- Added new Pydantic models and typed response wrappers for the document APIs.
+- Added tests covering the new document endpoints.
+
+### Fixes
+
+- Accepted string values for the `Role` enum.
+- Updated the README with the new document APIs and corrected import examples.
+
 ## 0.1.0 (2026-03-30)
 
 Initial release with full AppFlowy Cloud REST API coverage.
