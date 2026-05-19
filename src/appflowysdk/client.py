@@ -19,6 +19,19 @@ from appflowysdk.exceptions import (
 from appflowysdk.logger import logger
 from appflowysdk.models import (
     AddDatabaseRowRequest,
+    AppendBlockToPageParams,
+    BatchCreateCollabParams,
+    CollabDocStateParams,
+    CollabJsonResponse,
+    CollabJsonResponseWrapper,
+    CollabResponse,
+    CollabResponseWrapper,
+    CreateCollabParams,
+    CreateImportTask,
+    CreateImportTaskResponse,
+    CreateOrphanedViewParams,
+    CreatePageParams,
+    CreateQuickNoteParams,
     Database,
     DatabaseField,
     DatabaseFieldsResponse,
@@ -29,11 +42,26 @@ from appflowysdk.models import (
     DatabaseRowsUpdatedResponse,
     DatabaseRowUpdated,
     DatabasesResponse,
+    DuplicatePageParams,
     FolderResponse,
     FolderView,
+    ImportTaskResponse,
+    PageCollab,
+    PageCollabResponse,
+    PageResponse,
+    PublishPageParams,
+    QuickNote,
+    QuickNoteResponse,
+    QuickNotes,
+    QuickNotesResponse,
+    SearchDocumentRequest,
+    SearchDocumentResponseItem,
+    SearchResponse,
     Token,
     TokenResponse,
+    UpdateCollabWebParams,
     UpsertDatabaseRowRequest,
+    ViewLayout,
     Workspace,
     WorkspacesResponse,
 )
@@ -435,6 +463,303 @@ class AppFlowy:
             params=params,
         )
         response = DatabaseRowDetailsResponse(**body)
+        return response.data
+
+    # ------------------------------------------------------------------
+    # Document (Collab)
+    # ------------------------------------------------------------------
+
+    def create_collab(
+        self,
+        workspace_id: str,
+        object_id: str,
+        encoded_collab: str,
+    ) -> None:
+        """Create a new collab object."""
+        request = CreateCollabParams(encoded_collab=encoded_collab)
+        self._request(
+            "POST",
+            f"/api/workspace/{workspace_id}/collab/{object_id}",
+            json_body=request.model_dump(),
+        )
+
+    def update_collab(
+        self,
+        workspace_id: str,
+        object_id: str,
+        encoded_collab: str,
+    ) -> None:
+        """Update an existing collab."""
+        request = CreateCollabParams(encoded_collab=encoded_collab)
+        self._request(
+            "PUT",
+            f"/api/workspace/{workspace_id}/collab/{object_id}",
+            json_body=request.model_dump(),
+        )
+
+    def get_collab(
+        self,
+        workspace_id: str,
+        object_id: str,
+    ) -> CollabResponse:
+        """Retrieve encoded collab data."""
+        body = self._request(
+            "GET",
+            f"/api/workspace/{workspace_id}/collab/{object_id}",
+        )
+        response = CollabResponseWrapper(**body)
+        return response.data
+
+    def get_collab_json(
+        self,
+        workspace_id: str,
+        object_id: str,
+    ) -> CollabJsonResponse:
+        """Retrieve collab as JSON."""
+        body = self._request(
+            "GET",
+            f"/api/workspace/v1/{workspace_id}/collab/{object_id}/json",
+        )
+        response = CollabJsonResponseWrapper(**body)
+        return response.data
+
+    def batch_create_collab(
+        self,
+        workspace_id: str,
+        collabs: dict[str, str],
+    ) -> None:
+        """Bulk create collabs."""
+        request = BatchCreateCollabParams(collabs=collabs)
+        self._request(
+            "POST",
+            f"/api/workspace/{workspace_id}/batch/collab",
+            json_body=request.model_dump(),
+        )
+
+    def full_sync_collab(
+        self,
+        workspace_id: str,
+        object_id: str,
+        doc_state: str,
+    ) -> bytes:
+        """Full document state sync. Returns binary data."""
+        request = CollabDocStateParams(doc_state=doc_state)
+        url = f"{self.base_url}/api/workspace/v1/{workspace_id}/collab/{object_id}/full-sync"
+        response = self._http_client.post(
+            url,
+            headers=self._headers(),
+            json=request.model_dump(),
+        )
+        if response.status_code >= 400:
+            self._handle_response(response)
+        return response.content
+
+    def web_update_collab(
+        self,
+        workspace_id: str,
+        object_id: str,
+        update: str,
+    ) -> None:
+        """Push update from web client."""
+        request = UpdateCollabWebParams(update=update)
+        self._request(
+            "POST",
+            f"/api/workspace/v1/{workspace_id}/collab/{object_id}/web-update",
+            json_body=request.model_dump(),
+        )
+
+    # ------------------------------------------------------------------
+    # Page & View
+    # ------------------------------------------------------------------
+
+    def create_page(
+        self,
+        workspace_id: str,
+        parent_view_id: str,
+        layout: ViewLayout = ViewLayout.DOCUMENT,
+        name: str | None = None,
+        page_data: dict[str, Any] | None = None,
+    ) -> FolderView:
+        """Create a new document page."""
+        request = CreatePageParams(
+            parent_view_id=parent_view_id,
+            layout=layout,
+            name=name,
+            page_data=page_data,
+        )
+        body = self._request(
+            "POST",
+            f"/api/workspace/{workspace_id}/page-view",
+            json_body=request.model_dump(exclude_none=True),
+        )
+        response = PageResponse(**body)
+        return response.data
+
+    def get_page(
+        self,
+        workspace_id: str,
+        view_id: str,
+    ) -> PageCollab:
+        """Get page data and metadata."""
+        body = self._request(
+            "GET",
+            f"/api/workspace/{workspace_id}/page-view/{view_id}",
+        )
+        response = PageCollabResponse(**body)
+        return response.data
+
+    def append_page_blocks(
+        self,
+        workspace_id: str,
+        view_id: str,
+        blocks: list[dict[str, Any]],
+    ) -> None:
+        """Append blocks to a document."""
+        request = AppendBlockToPageParams(blocks=blocks)
+        self._request(
+            "POST",
+            f"/api/workspace/{workspace_id}/page-view/{view_id}/append-block",
+            json_body=request.model_dump(),
+        )
+
+    def create_orphaned_view(
+        self,
+        workspace_id: str,
+        layout: ViewLayout = ViewLayout.DOCUMENT,
+        name: str | None = None,
+    ) -> None:
+        """Create a view without a parent."""
+        request = CreateOrphanedViewParams(layout=layout, name=name)
+        self._request(
+            "POST",
+            f"/api/workspace/{workspace_id}/orphaned-view",
+            json_body=request.model_dump(exclude_none=True),
+        )
+
+    def duplicate_page(
+        self,
+        workspace_id: str,
+        view_id: str,
+        parent_view_id: str | None = None,
+    ) -> None:
+        """Duplicate an existing page."""
+        request = DuplicatePageParams(parent_view_id=parent_view_id)
+        self._request(
+            "POST",
+            f"/api/workspace/{workspace_id}/page-view/{view_id}/duplicate",
+            json_body=request.model_dump(exclude_none=True),
+        )
+
+    # ------------------------------------------------------------------
+    # Quick Note
+    # ------------------------------------------------------------------
+
+    def create_quick_note(
+        self,
+        workspace_id: str,
+        title: str,
+        content: str,
+    ) -> QuickNote:
+        """Create a quick note."""
+        request = CreateQuickNoteParams(title=title, content=content)
+        body = self._request(
+            "POST",
+            f"/api/workspace/{workspace_id}/quick-note",
+            json_body=request.model_dump(),
+        )
+        response = QuickNoteResponse(**body)
+        return response.data
+
+    def list_quick_notes(
+        self,
+        workspace_id: str,
+    ) -> QuickNotes:
+        """List user quick notes."""
+        body = self._request(
+            "GET",
+            f"/api/workspace/{workspace_id}/quick-note",
+        )
+        response = QuickNotesResponse(**body)
+        return response.data
+
+    # ------------------------------------------------------------------
+    # Search
+    # ------------------------------------------------------------------
+
+    def search_documents(
+        self,
+        workspace_id: str,
+        query: str,
+    ) -> list[SearchDocumentResponseItem]:
+        """Semantic search in documents."""
+        params = {"query": query}
+        body = self._request(
+            "GET",
+            f"/api/search/{workspace_id}",
+            params=params,
+        )
+        response = SearchResponse(**body)
+        return response.data
+
+    # ------------------------------------------------------------------
+    # Publishing
+    # ------------------------------------------------------------------
+
+    def publish_page(
+        self,
+        workspace_id: str,
+        view_id: str,
+    ) -> None:
+        """Make a page public."""
+        self._request(
+            "POST",
+            f"/api/workspace/{workspace_id}/page-view/{view_id}/publish",
+            json_body={},
+        )
+
+    def unpublish_page(
+        self,
+        workspace_id: str,
+        view_id: str,
+    ) -> None:
+        """Revoke public access."""
+        self._request(
+            "POST",
+            f"/api/workspace/{workspace_id}/page-view/{view_id}/unpublish",
+        )
+
+    # ------------------------------------------------------------------
+    # Import
+    # ------------------------------------------------------------------
+
+    def import_zip(
+        self,
+        zip_content: bytes,
+    ) -> None:
+        """Upload and import document data."""
+        url = f"{self.base_url}/api/import"
+        files = {"file": ("import.zip", zip_content, "application/zip")}
+        response = self._http_client.post(
+            url,
+            headers=self._headers(),
+            files=files,
+        )
+        if response.status_code >= 400:
+            self._handle_response(response)
+
+    def create_import_task(
+        self,
+        import_type: str,
+        data: dict[str, Any],
+    ) -> CreateImportTaskResponse:
+        """Create an import task (Notion, etc.)."""
+        request = CreateImportTask(import_type=import_type, data=data)
+        body = self._request(
+            "POST",
+            "/api/import/create",
+            json_body=request.model_dump(),
+        )
+        response = ImportTaskResponse(**body)
         return response.data
 
     # ------------------------------------------------------------------

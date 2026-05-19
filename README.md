@@ -13,7 +13,7 @@ uv add appflowysdk
 ## Quick Start
 
 ```python
-from appflowy import AppFlowy
+from appflowysdk import AppFlowy
 
 with AppFlowy(email="user@example.com", password="password") as client:
     # Authenticate
@@ -66,6 +66,21 @@ with AppFlowy(email="user@example.com", password="password") as client:
     )
 ```
 
+## Document APIs
+
+New helpers cover document collabs, pages, quick notes, search, publishing, and imports:
+
+```python
+with AppFlowy(email="user@example.com", password="password") as client:
+    client.create_collab(workspace_id, object_id, encoded_collab)
+    collab = client.get_collab(workspace_id, object_id)
+    page = client.create_page(workspace_id, parent_view_id, name="My Page")
+    note = client.create_quick_note(workspace_id, "Idea", "Draft text")
+    results = client.search_documents(workspace_id, "meeting notes")
+    client.publish_page(workspace_id, page.view_id)
+    client.import_zip(zip_bytes)
+```
+
 ## OAuth
 
 ```python
@@ -81,7 +96,7 @@ token = client.oauth_redirect_token(
 All SDK errors inherit from `AppFlowyError`:
 
 ```python
-from src.exception import (
+from appflowysdk.exceptions import (
     AppFlowyError,
     LoginError,
     RefreshTokenError,
@@ -107,3 +122,22 @@ from src.exception import (
 | `upsert_database_row()` | `PUT /api/workspace/{id}/database/{id}/row` | Upsert row |
 | `get_database_row_ids_updated()` | `GET /api/workspace/{id}/database/{id}/row/updated` | Updated rows |
 | `get_database_row_details()` | `GET /api/workspace/{id}/database/{id}/row/detail` | Row details |
+| `create_collab()` | `POST /api/workspace/{id}/collab/{object_id}` | Create collab |
+| `update_collab()` | `PUT /api/workspace/{id}/collab/{object_id}` | Update collab |
+| `get_collab()` | `GET /api/workspace/{id}/collab/{object_id}` | Get collab |
+| `get_collab_json()` | `GET /api/workspace/v1/{id}/collab/{object_id}/json` | Get collab JSON |
+| `batch_create_collab()` | `POST /api/workspace/{id}/batch/collab` | Bulk create collabs |
+| `full_sync_collab()` | `POST /api/workspace/v1/{id}/collab/{object_id}/full-sync` | Full document sync |
+| `web_update_collab()` | `POST /api/workspace/v1/{id}/collab/{object_id}/web-update` | Web client update |
+| `create_page()` | `POST /api/workspace/{id}/page-view` | Create page |
+| `get_page()` | `GET /api/workspace/{id}/page-view/{view_id}` | Get page |
+| `append_page_blocks()` | `POST /api/workspace/{id}/page-view/{view_id}/append-block` | Append blocks |
+| `create_orphaned_view()` | `POST /api/workspace/{id}/orphaned-view` | Create orphaned view |
+| `duplicate_page()` | `POST /api/workspace/{id}/page-view/{view_id}/duplicate` | Duplicate page |
+| `create_quick_note()` | `POST /api/workspace/{id}/quick-note` | Create quick note |
+| `list_quick_notes()` | `GET /api/workspace/{id}/quick-note` | List quick notes |
+| `search_documents()` | `GET /api/search/{id}` | Search documents |
+| `publish_page()` | `POST /api/workspace/{id}/page-view/{view_id}/publish` | Publish page |
+| `unpublish_page()` | `POST /api/workspace/{id}/page-view/{view_id}/unpublish` | Unpublish page |
+| `import_zip()` | `POST /api/import` | Import ZIP archive |
+| `create_import_task()` | `POST /api/import/create` | Create import task |
