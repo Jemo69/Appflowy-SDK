@@ -13,6 +13,11 @@
 - Accepted string values for the `Role` enum.
 - Updated the README with the new document APIs and corrected import examples.
 
+##  0.1.2 (2026-03-30)
+
+- GitHub Actions release workflow
+- Fixed broken PyPI release
+
 ## 0.1.0 (2026-03-30)
 
 Initial release with full AppFlowy Cloud REST API coverage.
@@ -38,7 +43,3 @@ Initial release with full AppFlowy Cloud REST API coverage.
 - Fixed overly permissive type hints (`str | None | Any`)
 
 
-## 0.1.1 - 0.1.2 (2026-03-30)
-
-- GitHub Actions release workflow
-- Fixed broken PyPI release

@@ -45,7 +45,7 @@ for ws in workspaces:
 
 ## Get Workspace Folder
 
-Retrieve the folder structure (page tree) of a workspace.
+Retrieve the folder structure (page tree) of a workspace. This is the same tree that powers the document APIs.
 
 ```python
 folder = client.get_workspace_folder("workspace-uuid")
@@ -108,3 +108,7 @@ subfolder = client.get_workspace_folder(
 | 2 | `BOARD` | Kanban board |
 | 3 | `CALENDAR` | Calendar view |
 | 4 | `CHAT` | Chat view |
+
+## Related Document APIs
+
+For page creation, publishing, quick notes, and document search, see [Documents](documents.md).

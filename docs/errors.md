@@ -33,7 +33,7 @@ class AppFlowyError(Exception):
 Raised when password authentication fails.
 
 ```python
-from src.exception import LoginError
+from appflowysdk.exceptions import LoginError
 
 try:
     client.login()
@@ -47,7 +47,7 @@ except LoginError as e:
 Raised when token refresh fails (expired refresh token, invalid token, etc.).
 
 ```python
-from src.exception import RefreshTokenError
+from appflowysdk.exceptions import RefreshTokenError
 
 try:
     client.refresh_token()
@@ -61,7 +61,7 @@ except RefreshTokenError as e:
 Raised when any API request returns a non-2xx status code.
 
 ```python
-from src.exception import APIError
+from appflowysdk.exceptions import APIError
 
 try:
     workspaces = client.get_workspaces()
@@ -76,7 +76,7 @@ except APIError as e:
 Subclass of `APIError` for 404 responses.
 
 ```python
-from src.exception import NotFoundError
+from appflowysdk.exceptions import NotFoundError
 
 try:
     folder = client.get_workspace_folder("invalid-uuid")
@@ -89,7 +89,7 @@ except NotFoundError as e:
 Raised when SDK-side validation fails (before making a request).
 
 ```python
-from src.exception import ValidationError
+from appflowysdk.exceptions import ValidationError
 
 try:
     # Empty row_ids list is invalid
@@ -103,7 +103,7 @@ except ValidationError as e:
 Raised when a network-level error occurs (connection failure, timeout, DNS error).
 
 ```python
-from src.exception import NetworkError
+from appflowysdk.exceptions import NetworkError
 
 try:
     client.get_workspaces()
@@ -116,7 +116,7 @@ except NetworkError as e:
 Use the base `AppFlowyError` to catch any SDK error:
 
 ```python
-from src.exception import AppFlowyError
+from appflowysdk.exceptions import AppFlowyError
 
 try:
     client.login()

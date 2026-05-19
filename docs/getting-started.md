@@ -49,7 +49,7 @@ client.close()
 ## Using as Context Manager
 
 ```python
-from appflowy import AppFlowy
+from appflowysdk import AppFlowy
 
 with AppFlowy(email="user@example.com", password="your-password") as client:
     token = client.login()
@@ -69,8 +69,23 @@ client = AppFlowy(
 )
 ```
 
+## Document Workflows
+
+```python
+from appflowysdk import AppFlowy
+
+workspace_id = "workspace-uuid"
+parent_view_id = "parent-view-uuid"
+
+with AppFlowy(email="user@example.com", password="your-password") as client:
+    client.login()
+    page = client.create_page(workspace_id, parent_view_id, name="My Page")
+    note = client.create_quick_note(workspace_id, "Idea", "Draft text")
+    results = client.search_documents(workspace_id, "meeting notes")
+```
+
 ## Next Steps
 
 - Learn about [Authentication](authentication.md) flows
-- Explore [Workspaces](workspaces.md) and [Databases](databases.md)
+- Explore [Workspaces](workspaces.md), [Databases](databases.md), and [Documents](documents.md)
 - Understand [Error Handling](errors.md)

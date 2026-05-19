@@ -68,9 +68,15 @@ with AppFlowy(email="user@example.com", password="password") as client:
 
 ## Document APIs
 
-New helpers cover document collabs, pages, quick notes, search, publishing, and imports:
+New helpers cover document collabs, pages, quick notes, search, publishing, and imports. See [`docs/documents.md`](docs/documents.md) for details.
 
 ```python
+workspace_id = "workspace-uuid"
+object_id = "object-uuid"
+parent_view_id = "parent-view-uuid"
+encoded_collab = "encoded-collab"
+zip_bytes = b"..."
+
 with AppFlowy(email="user@example.com", password="password") as client:
     client.create_collab(workspace_id, object_id, encoded_collab)
     collab = client.get_collab(workspace_id, object_id)

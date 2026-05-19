@@ -8,6 +8,7 @@ Welcome to the AppFlowy SDK - a type-safe Python client for the [AppFlowy Cloud 
 - [Authentication](authentication.md)
 - [Workspaces](workspaces.md)
 - [Databases](databases.md)
+- [Documents](documents.md)
 - [Models Reference](models.md)
 - [Error Handling](errors.md)
 - [API Endpoints](api-reference.md)

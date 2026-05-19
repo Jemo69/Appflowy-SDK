@@ -1,6 +1,6 @@
 # Models Reference
 
-All models are defined in `src/models.py` using Pydantic v2.
+All models are defined in `src/appflowysdk/models.py` using Pydantic v2.
 
 ## Enums
 
@@ -60,6 +60,15 @@ class TokenResponse(BaseModel):
 ```
 
 ## Workspace Models
+
+### User
+
+```python
+class User(BaseModel):
+    uuid: str
+    name: str
+    avatar_url: str | None = None
+```
 
 ### Workspace
 
@@ -197,6 +206,95 @@ class ApiResponse(BaseModel):
     message: str
 ```
 
+## Document Models
+
+### Collab Models
+
+```python
+class CreateCollabParams(BaseModel):
+    encoded_collab: str
+
+class CollabResponse(BaseModel):
+    encoded_collab: str
+
+class CollabJsonResponse(BaseModel):
+    payload: dict[str, Any]
+
+class BatchCreateCollabParams(BaseModel):
+    collabs: dict[str, str]
+
+class CollabDocStateParams(BaseModel):
+    doc_state: str
+
+class UpdateCollabWebParams(BaseModel):
+    update: str
+```
+
+### Page Models
+
+```python
+class CreatePageParams(BaseModel):
+    parent_view_id: str
+    layout: ViewLayout
+    name: str | None = None
+    page_data: dict[str, Any] | None = None
+
+class PageCollabData(BaseModel):
+    encoded_collab: str
+    row_data: dict[str, Any] | None = None
+
+class PageCollab(BaseModel):
+    view: FolderView
+    data: PageCollabData
+    owner: User
+
+class AppendBlockToPageParams(BaseModel):
+    blocks: list[dict[str, Any]]
+
+class CreateOrphanedViewParams(BaseModel):
+    layout: ViewLayout
+    name: str | None = None
+
+class DuplicatePageParams(BaseModel):
+    parent_view_id: str | None = None
+```
+
+### Quick Note, Search, Publish, and Import Models
+
+```python
+class CreateQuickNoteParams(BaseModel):
+    title: str
+    content: str
+
+class QuickNote(BaseModel):
+    id: str
+    title: str
+    content: str
+    created_at: datetime
+    updated_at: datetime
+
+class QuickNotes(BaseModel):
+    items: list[QuickNote]
+
+class SearchDocumentRequest(BaseModel):
+    query: str
+
+class SearchDocumentResponseItem(BaseModel):
+    view_id: str
+    name: str
+    snippet: str | None = None
+
+class PublishPageParams(BaseModel):
+    pass
+
+class CreateImportTask(BaseModel):
+    import_type: str
+    data: dict[str, Any]
+
+class CreateImportTaskResponse(BaseModel):
+    task_id: str
+```
+
 ## Typed Response Models
 
 Each endpoint has a corresponding typed response model:
@@ -210,5 +308,11 @@ Each endpoint has a corresponding typed response model:
 | `DatabaseRowsResponse` | `list[DatabaseRow]` |
 | `DatabaseRowsUpdatedResponse` | `list[DatabaseRowUpdated]` |
 | `DatabaseRowDetailsResponse` | `list[DatabaseRowDetail]` |
-| `CreateDatabaseRowResponse` | `str \| None` |
-| `UpsertDatabaseRowResponse` | `str \| None` |
+| `CollabResponseWrapper` | `CollabResponse` |
+| `CollabJsonResponseWrapper` | `CollabJsonResponse` |
+| `PageResponse` | `FolderView` |
+| `PageCollabResponse` | `PageCollab` |
+| `QuickNoteResponse` | `QuickNote` |
+| `QuickNotesResponse` | `QuickNotes` |
+| `SearchResponse` | `list[SearchDocumentResponseItem]` |
+| `ImportTaskResponse` | `CreateImportTaskResponse` |

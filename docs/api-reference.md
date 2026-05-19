@@ -251,3 +251,338 @@ details = client.get_database_row_details(
 | **Auth** | Bearer token |
 | **Returns** | `list[DatabaseRowDetail]` |
 | **Raises** | `APIError`, `ValidationError` |
+
+---
+
+## Documents
+
+### create_collab()
+
+Create a document collab.
+
+```python
+client.create_collab(workspace_id: str, object_id: str, encoded_collab: str) -> None
+```
+
+| | |
+|---|---|
+| **Endpoint** | `POST /api/workspace/{workspace_id}/collab/{object_id}` |
+| **Auth** | Bearer token |
+| **Returns** | `None` |
+| **Raises** | `APIError` |
+
+---
+
+### update_collab()
+
+Update an existing collab.
+
+```python
+client.update_collab(workspace_id: str, object_id: str, encoded_collab: str) -> None
+```
+
+| | |
+|---|---|
+| **Endpoint** | `PUT /api/workspace/{workspace_id}/collab/{object_id}` |
+| **Auth** | Bearer token |
+| **Returns** | `None` |
+| **Raises** | `APIError` |
+
+---
+
+### get_collab()
+
+Get encoded collab data.
+
+```python
+collab = client.get_collab(workspace_id: str, object_id: str) -> CollabResponse
+```
+
+| | |
+|---|---|
+| **Endpoint** | `GET /api/workspace/{workspace_id}/collab/{object_id}` |
+| **Auth** | Bearer token |
+| **Returns** | `CollabResponse` |
+| **Raises** | `APIError` |
+
+---
+
+### get_collab_json()
+
+Get collab payload as JSON.
+
+```python
+collab = client.get_collab_json(workspace_id: str, object_id: str) -> CollabJsonResponse
+```
+
+| | |
+|---|---|
+| **Endpoint** | `GET /api/workspace/v1/{workspace_id}/collab/{object_id}/json` |
+| **Auth** | Bearer token |
+| **Returns** | `CollabJsonResponse` |
+| **Raises** | `APIError` |
+
+---
+
+### batch_create_collab()
+
+Create multiple collabs in one request.
+
+```python
+client.batch_create_collab(workspace_id: str, collabs: dict[str, str]) -> None
+```
+
+| | |
+|---|---|
+| **Endpoint** | `POST /api/workspace/{workspace_id}/batch/collab` |
+| **Auth** | Bearer token |
+| **Returns** | `None` |
+| **Raises** | `APIError` |
+
+---
+
+### full_sync_collab()
+
+Synchronize the full document state.
+
+```python
+content = client.full_sync_collab(workspace_id: str, object_id: str, doc_state: str) -> bytes
+```
+
+| | |
+|---|---|
+| **Endpoint** | `POST /api/workspace/v1/{workspace_id}/collab/{object_id}/full-sync` |
+| **Auth** | Bearer token |
+| **Returns** | `bytes` |
+| **Raises** | `APIError` |
+
+---
+
+### web_update_collab()
+
+Push an update from a web client.
+
+```python
+client.web_update_collab(workspace_id: str, object_id: str, update: str) -> None
+```
+
+| | |
+|---|---|
+| **Endpoint** | `POST /api/workspace/v1/{workspace_id}/collab/{object_id}/web-update` |
+| **Auth** | Bearer token |
+| **Returns** | `None` |
+| **Raises** | `APIError` |
+
+---
+
+### create_page()
+
+Create a new page view.
+
+```python
+page = client.create_page(
+    workspace_id: str,
+    parent_view_id: str,
+    layout: ViewLayout = ViewLayout.DOCUMENT,
+    name: str | None = None,
+    page_data: dict[str, Any] | None = None,
+) -> FolderView
+```
+
+| | |
+|---|---|
+| **Endpoint** | `POST /api/workspace/{workspace_id}/page-view` |
+| **Auth** | Bearer token |
+| **Returns** | `FolderView` |
+| **Raises** | `APIError` |
+
+---
+
+### get_page()
+
+Get page metadata and collab data.
+
+```python
+page = client.get_page(workspace_id: str, view_id: str) -> PageCollab
+```
+
+| | |
+|---|---|
+| **Endpoint** | `GET /api/workspace/{workspace_id}/page-view/{view_id}` |
+| **Auth** | Bearer token |
+| **Returns** | `PageCollab` |
+| **Raises** | `APIError` |
+
+---
+
+### append_page_blocks()
+
+Append blocks to a page.
+
+```python
+client.append_page_blocks(workspace_id: str, view_id: str, blocks: list[dict[str, Any]]) -> None
+```
+
+| | |
+|---|---|
+| **Endpoint** | `POST /api/workspace/{workspace_id}/page-view/{view_id}/append-block` |
+| **Auth** | Bearer token |
+| **Returns** | `None` |
+| **Raises** | `APIError` |
+
+---
+
+### create_orphaned_view()
+
+Create a page view without a parent.
+
+```python
+client.create_orphaned_view(
+    workspace_id: str,
+    layout: ViewLayout = ViewLayout.DOCUMENT,
+    name: str | None = None,
+) -> None
+```
+
+| | |
+|---|---|
+| **Endpoint** | `POST /api/workspace/{workspace_id}/orphaned-view` |
+| **Auth** | Bearer token |
+| **Returns** | `None` |
+| **Raises** | `APIError` |
+
+---
+
+### duplicate_page()
+
+Duplicate a page view.
+
+```python
+client.duplicate_page(workspace_id: str, view_id: str, parent_view_id: str | None = None) -> None
+```
+
+| | |
+|---|---|
+| **Endpoint** | `POST /api/workspace/{workspace_id}/page-view/{view_id}/duplicate` |
+| **Auth** | Bearer token |
+| **Returns** | `None` |
+| **Raises** | `APIError` |
+
+---
+
+### create_quick_note()
+
+Create a quick note.
+
+```python
+note = client.create_quick_note(workspace_id: str, title: str, content: str) -> QuickNote
+```
+
+| | |
+|---|---|
+| **Endpoint** | `POST /api/workspace/{workspace_id}/quick-note` |
+| **Auth** | Bearer token |
+| **Returns** | `QuickNote` |
+| **Raises** | `APIError` |
+
+---
+
+### list_quick_notes()
+
+List all quick notes.
+
+```python
+notes = client.list_quick_notes(workspace_id: str) -> QuickNotes
+```
+
+| | |
+|---|---|
+| **Endpoint** | `GET /api/workspace/{workspace_id}/quick-note` |
+| **Auth** | Bearer token |
+| **Returns** | `QuickNotes` |
+| **Raises** | `APIError` |
+
+---
+
+### search_documents()
+
+Search documents within a workspace.
+
+```python
+results = client.search_documents(workspace_id: str, query: str) -> list[SearchDocumentResponseItem]
+```
+
+| | |
+|---|---|
+| **Endpoint** | `GET /api/search/{workspace_id}` |
+| **Auth** | Bearer token |
+| **Returns** | `list[SearchDocumentResponseItem]` |
+| **Raises** | `APIError` |
+
+---
+
+### publish_page()
+
+Publish a page.
+
+```python
+client.publish_page(workspace_id: str, view_id: str) -> None
+```
+
+| | |
+|---|---|
+| **Endpoint** | `POST /api/workspace/{workspace_id}/page-view/{view_id}/publish` |
+| **Auth** | Bearer token |
+| **Returns** | `None` |
+| **Raises** | `APIError` |
+
+---
+
+### unpublish_page()
+
+Unpublish a page.
+
+```python
+client.unpublish_page(workspace_id: str, view_id: str) -> None
+```
+
+| | |
+|---|---|
+| **Endpoint** | `POST /api/workspace/{workspace_id}/page-view/{view_id}/unpublish` |
+| **Auth** | Bearer token |
+| **Returns** | `None` |
+| **Raises** | `APIError` |
+
+---
+
+### import_zip()
+
+Import a ZIP archive.
+
+```python
+client.import_zip(zip_content: bytes) -> None
+```
+
+| | |
+|---|---|
+| **Endpoint** | `POST /api/import` |
+| **Auth** | Bearer token |
+| **Returns** | `None` |
+| **Raises** | `APIError` |
+
+---
+
+### create_import_task()
+
+Create an import task.
+
+```python
+result = client.create_import_task(import_type: str, data: dict[str, Any]) -> CreateImportTaskResponse
+```
+
+| | |
+|---|---|
+| **Endpoint** | `POST /api/import/create` |
+| **Auth** | Bearer token |
+| **Returns** | `CreateImportTaskResponse` |
+| **Raises** | `APIError` |

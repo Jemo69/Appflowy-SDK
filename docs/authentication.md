@@ -7,7 +7,7 @@ The AppFlowy SDK supports two authentication methods: password-based login and O
 The most common way to authenticate. Use your AppFlowy Cloud email and password.
 
 ```python
-from appflowy import AppFlowy
+from appflowysdk import AppFlowy
 
 client = AppFlowy(email="user@example.com", password="your-password")
 token = client.login()
@@ -59,7 +59,7 @@ workspaces = client.get_workspaces()
 For third-party integrations using AppFlowy OAuth.
 
 ```python
-from appflowy import AppFlowy
+from appflowysdk import AppFlowy
 
 client = AppFlowy()
 
@@ -88,7 +88,7 @@ token = client.oauth_redirect_token(
 All authentication methods raise typed exceptions on failure.
 
 ```python
-from src.exception import LoginError, RefreshTokenError
+from appflowysdk.exceptions import LoginError, RefreshTokenError
 
 try:
     client.login()

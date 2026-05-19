@@ -1,6 +1,6 @@
 ---
 name: appflowy-sdk
-description: Helps answer AppFlowy SDK API usage questions, including authentication, workspaces, databases, row operations, and error handling.
+description: Helps answer AppFlowy SDK API usage questions, including authentication, workspaces, databases, row operations, document APIs, and error handling.
 ---
 
 # AppFlowy SDK
@@ -13,6 +13,7 @@ Use this skill when the user asks how to use the AppFlowy Python SDK or needs he
 - Workspace discovery with `get_workspaces()` and `get_workspace_folder()`
 - Database access with `get_databases()` and `get_database_fields()`
 - Row workflows with `get_database_row_ids()`, `get_database_row_details()`, `create_database_row()`, `upsert_database_row()`, and `get_database_row_ids_updated()`
+- Document workflows with collab, page, quick note, search, publishing, and import endpoints
 - Exception handling with `AppFlowyError`, `LoginError`, `RefreshTokenError`, `APIError`, `ValidationError`, and `NetworkError`
 
 ## Core Rules
@@ -44,6 +45,17 @@ with AppFlowy(email="user@example.com", password="password") as client:
 - “Create a record” -> `create_database_row(workspace_id, database_id, cells=..., document=...)`
 - “Upsert a record” -> `upsert_database_row(workspace_id, database_id, pre_hash, cells=..., document=...)`
 - “Find updated rows” -> `get_database_row_ids_updated(workspace_id, database_id, after=...)`
+- “Create/open a document” -> `create_page(workspace_id, parent_view_id, layout=..., name=..., page_data=...)`
+- “Get a page and its collab” -> `get_page(workspace_id, view_id)`
+- “Append blocks to a page” -> `append_page_blocks(workspace_id, view_id, blocks)`
+- “Create a quick note” -> `create_quick_note(workspace_id, title, content)`
+- “List quick notes” -> `list_quick_notes(workspace_id)`
+- “Search documents” -> `search_documents(workspace_id, query)`
+- “Publish a page” -> `publish_page(workspace_id, view_id)`
+- “Unpublish a page” -> `unpublish_page(workspace_id, view_id)`
+- “Import a ZIP archive” -> `import_zip(zip_content)`
+- “Create an import task” -> `create_import_task(import_type, data)`
+- “Work with raw collab data” -> `create_collab(...)`, `update_collab(...)`, `get_collab(...)`, `get_collab_json(...)`, `batch_create_collab(...)`, `full_sync_collab(...)`, `web_update_collab(...)`
 
 ## Response Style
 
@@ -59,3 +71,7 @@ with AppFlowy(email="user@example.com", password="password") as client:
 - `get_database_row_details()` requires at least one row ID
 - `get_database_row_ids_updated()` accepts a `datetime` or ISO 8601 string
 - `get_workspaces()` can optionally include `include_member_count` and `include_role`
+- `create_page()` and `create_orphaned_view()` default to `ViewLayout.DOCUMENT`
+- `create_quick_note()` returns a `QuickNote`; `list_quick_notes()` returns `QuickNotes`
+- `search_documents()` returns a list of `SearchDocumentResponseItem`
+- `full_sync_collab()` returns raw `bytes`
