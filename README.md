@@ -5,8 +5,8 @@ Type-safe Python SDK for the [AppFlowy Cloud REST API](https://beta.appflowy.clo
 ## Installation
 
 ```bash
-pip install appflowysdk 
-## or
+pip install appflowysdk
+# or
 uv add appflowysdk
 ```
 
